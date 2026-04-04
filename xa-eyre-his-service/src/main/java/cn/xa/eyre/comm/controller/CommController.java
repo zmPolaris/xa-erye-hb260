@@ -33,7 +33,7 @@ public class CommController {
         logger.info("->loadUsers");
         List<Users> list = usersMapper.selectUserAll();
         for (Users user : list) {
-            user.setUserName(CharsetUtil.convertToChinese(user.getUserName()));
+//            user.setUserName(CharsetUtil.convertToChinese(user.getUserName()));
             redisCache.setCacheObject(CacheConstants.SYS_COMM_USER_NAME_KEY + user.getUserName(), user);
             redisCache.setCacheObject(CacheConstants.SYS_COMM_DB_USER_KEY + user.getDbUser(), user);
         }

@@ -540,4 +540,21 @@
     where VISIT_DATE = #{visitDate,jdbcType=TIMESTAMP}
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
   </update>
+
+  <select id="selectClinicMaster" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from CLINIC_MASTER c
+    <where>
+      <if test="visitDate != null">
+        and c.VISIT_DATE = TO_DATE(#{visitDate,jdbcType=TIMESTAMP}, 'YYYY-MM-DD')
+      </if>
+      <if test="visitNo != null">
+        and c.VISIT_NO = #{visitNo,jdbcType=NUMERIC}
+      </if>
+      <if test="patientId != null">
+        and c.PATIENT_ID = #{patientId,jdbcType=VARCHAR}
+      </if>
+    </where>
+  </select>
 </mapper>

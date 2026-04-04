@@ -256,4 +256,41 @@
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
       and ORDINAL = #{ordinal,jdbcType=NUMERIC}
   </update>
+
+  <select id="selectOutpMrList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from (select
+    <include refid="Base_Column_List" />
+    from OUTPDOCT.OUTP_MR
+    ORDER BY VISIT_DATE DESC)
+    WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+  </select>
+  <select id="selectOutpMrByCondition" parameterType="cn.xa.eyre.outpdoct.domain.OutpMr" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from OUTPDOCT.OUTP_MR
+    <where>
+      <if test="visitDateStr != null">
+        and VISIT_DATE = TO_DATE(#{visitDateStr,jdbcType=VARCHAR}, 'yyyy/MM/dd HH24:mi:ss')
+      </if>
+      <if test="visitDateShortStr != null">
+        and TRUNC(VISIT_DATE) = TO_DATE(#{visitDateShortStr,jdbcType=VARCHAR}, 'yyyy/MM/dd')
+      </if>
+      <if test="visitNo != null">
+        and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
+      </if>
+      <if test="ordinal != null">
+        and ORDINAL = #{ordinal,jdbcType=NUMERIC}
+      </if>
+      <if test="patientId != null">
+        and PATIENT_ID = #{patientId,jdbcType=VARCHAR}
+      </if>
+      <if test="doctor != null">
+        and VISIT_DATE = #{doctor,jdbcType=VARCHAR}
+      </if>
+      order by visit_date desc
+    </where>
+
+  </select>
 </mapper>

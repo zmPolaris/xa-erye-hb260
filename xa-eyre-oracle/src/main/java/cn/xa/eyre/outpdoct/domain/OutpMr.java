@@ -35,6 +35,10 @@ public class OutpMr extends OutpMrKey {
 
     private Date printDateTime;
 
+    private String visitDateStr;
+
+    private String visitDateShortStr;
+
     public String getPatientId() {
         return patientId;
     }
@@ -161,5 +165,21 @@ public class OutpMr extends OutpMrKey {
 
     public void setPrintDateTime(Date printDateTime) {
         this.printDateTime = printDateTime;
+    }
+
+    public String getVisitDateStr() {
+        return visitDateStr;
+    }
+
+    public void setVisitDateStr(String visitDateStr) {
+        this.visitDateStr = visitDateStr;
+    }
+
+    public String getVisitDateShortStr() {
+        return visitDateShortStr;
+    }
+
+    public void setVisitDateShortStr(String visitDateShortStr) {
+        this.visitDateShortStr = visitDateShortStr;
     }
 }

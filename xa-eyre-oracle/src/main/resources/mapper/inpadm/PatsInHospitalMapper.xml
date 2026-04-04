@@ -341,4 +341,13 @@
       NURSE_IN_CHARGE = #{nurseInCharge,jdbcType=VARCHAR}
     where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectPatsInHospital" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from INPADM.PATS_IN_HOSPITAL
+    where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
+
+    and VISIT_ID = #{visitId,jdbcType=NUMERIC}
+  </select>
 </mapper>

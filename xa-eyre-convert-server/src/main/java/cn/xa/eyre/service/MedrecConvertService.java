@@ -453,7 +453,7 @@ public class MedrecConvertService {
                 }
             }
             emrAdmissionRecord.setAdmissionNum(String.valueOf(patVisit.getVisitId()));
-            emrAdmissionRecord.setRegNo(patVisit.getMdtrtId());
+//            emrAdmissionRecord.setRegNo(patVisit.getMdtrtId());
             emrAdmissionRecord.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patVisit.getAdmissionDateTime()));
             // 住院医师
             if (StringUtils.isNotBlank(patVisit.getConsultingDoctor())){

@@ -7,10 +7,8 @@ import cn.xa.eyre.common.constant.CacheConstants;
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
 import cn.xa.eyre.common.core.redis.RedisCache;
-import cn.xa.eyre.common.core.text.Convert;
 import cn.xa.eyre.common.utils.DateUtils;
 import cn.xa.eyre.hisapi.CommFeignClient;
-import cn.xa.eyre.hisapi.InpbillFeignClient;
 import cn.xa.eyre.hisapi.MedrecFeignClient;
 import cn.xa.eyre.hisapi.OrdadmFeignClient;
 import cn.xa.eyre.hub.domain.emrmonitor.EmrDeathInfo;
@@ -20,16 +18,15 @@ import cn.xa.eyre.hub.domain.emrreal.EmrPatientInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
-import cn.xa.eyre.medrec.domain.DiagnosticDescCode;
+//import cn.xa.eyre.medrec.domain.DiagnosticDescCode;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
-import cn.xa.eyre.medrec.domain.Transfer;
+//import cn.xa.eyre.medrec.domain.Transfer;
 import cn.xa.eyre.ordadm.domain.Orders;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import cn.xa.eyre.system.dict.service.DictDisDeptService;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,8 +55,6 @@ public class OrdadmConvertService {
     private MedrecFeignClient medrecFeignClient;
     @Autowired
     CommFeignClient commFeignClient;
-    @Autowired
-    InpbillFeignClient inpbillFeignClient;
 
     @Resource
     DictDisDeptService dictDisDeptService;
@@ -135,21 +130,21 @@ public class OrdadmConvertService {
                 emrDeathInfo.setIdCardTypeCode(patMasterIndex.getIdentity());
                 emrDeathInfo.setIdCardTypeName(patMasterIndex.getIdentity());
                 emrDeathInfo.setDeadDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, order.getEnterDateTime()));
-                R<DiagnosticDescCode> descCode = medrecFeignClient.getDiagnosticDescCode(patientId);
-                if (R.SUCCESS == descCode.getCode() && descCode.getData() != null){
-                    DiagnosticDescCode codeData = descCode.getData();
-                    String code = codeData.getDiagnosisCode();
-                    String diagnosisDesc = codeData.getDiagnosisDesc();
-                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
-                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-                        emrDeathInfo.setDirectCauseCode(code);
-                        emrDeathInfo.setDirectCauseName(diagnosisDesc);
-                    } else {
-                        emrDeathInfo.setDirectCauseCode(dictDiseaseIcd10.getHubCode());
-                        emrDeathInfo.setDirectCauseName(dictDiseaseIcd10.getHubName());
-                        emrDeathInfo.setDeathDiagnosisCode(code);
-                        emrDeathInfo.setDeathDiagnosisName(diagnosisDesc);
-                    }
+//                R<DiagnosticDescCode> descCode = medrecFeignClient.getDiagnosticDescCode(patientId);
+//                if (R.SUCCESS == descCode.getCode() && descCode.getData() != null){
+//                    DiagnosticDescCode codeData = descCode.getData();
+//                    String code = codeData.getDiagnosisCode();
+//                    String diagnosisDesc = codeData.getDiagnosisDesc();
+//                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
+//                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+//                        emrDeathInfo.setDirectCauseCode(code);
+//                        emrDeathInfo.setDirectCauseName(diagnosisDesc);
+//                    } else {
+//                        emrDeathInfo.setDirectCauseCode(dictDiseaseIcd10.getHubCode());
+//                        emrDeathInfo.setDirectCauseName(dictDiseaseIcd10.getHubName());
+//                        emrDeathInfo.setDeathDiagnosisCode(code);
+//                        emrDeathInfo.setDeathDiagnosisName(diagnosisDesc);
+//                    }
                     Users user = commConvertService.getUserByName(order.getDoctor());
                     emrDeathInfo.setChiefPhysicianId(user.getUserId());
                     emrDeathInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
@@ -174,9 +169,9 @@ public class OrdadmConvertService {
                         logger.info("死亡信息emr_death_info，患者ID：{} 已同步", patientId);
                     }
 
-                } else {
-                    logger.error("获取诊断描述失败！患者ID：{}", patientId);
-                }
+//                } else {
+//                    logger.error("获取诊断描述失败！患者ID：{}", patientId);
+//                }
 
             } else {
                 logger.error("获取死亡信息失败！患者ID：{}", patientId);
@@ -210,109 +205,6 @@ public class OrdadmConvertService {
         emrActivityInfo.setOrgName(emrDeathInfo.getOrgName());
         emrActivityInfo.setOperationTime(DateUtils.getTime());
         synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, Constants.HTTP_METHOD_POST);
-    }
-
-
-    @Scheduled(cron = "0 30 7,15,23 * * ?")
-    public void emrVitalSignsRecord() {
-        logger.debug("生命体征护理记录单emr_vital_signs_record定时任务执行接口, {}", DateUtils.getNowDate());
-        R<List<Transfer>> transfer = medrecFeignClient.getTransfer();
-        List<Transfer> transferList = transfer.getData();
-        Map<String, Transfer> transferMap = new HashMap<>();
-        List<String> transferIdList = new ArrayList<>();
-        if (R.SUCCESS != transfer.getCode() || null == transferList  || transferList.isEmpty()) {
-            logger.debug("未找到TRANSFER(ICU)数据");
-        } else {
-            for (Transfer tran : transferList) {
-                String patientId = tran.getPatientId();
-                transferIdList.add(patientId);
-                transferMap.put(patientId, tran);
-            }
-        }
-        R<List<String>> cpapInfo = inpbillFeignClient.getCPAPInfo();
-        List<String> cpapInfoList = cpapInfo.getData();
-        if (R.SUCCESS != cpapInfo.getCode() || null == cpapInfoList  || cpapInfoList.isEmpty()) {
-            logger.debug("未找到INP_BILL_DETAIL(CPAP)数据");
-        }
-        R<List<Transfer>> cpapDeptInfo = medrecFeignClient.getCPAPDeptInfo(cpapInfoList);
-        List<Transfer> cpapDeptInfoList = cpapDeptInfo.getData();
-        Map<String, Transfer> cpapDeptInfoMap = new HashMap<>();
-        if (R.SUCCESS != cpapDeptInfo.getCode() || null == cpapDeptInfoList  || cpapDeptInfoList.isEmpty()) {
-            logger.debug("未找到TRANSFER(CPAP)数据");
-        } else {
-            for (Transfer tran : cpapDeptInfoList) {
-                String patientId = tran.getPatientId();
-                String deptStayed = tran.getDeptStayed();
-                if (!DEPT_STAYED.equalsIgnoreCase(deptStayed)){
-                    cpapDeptInfoMap.put(patientId, tran);
-                }
-            }
-        }
-        // 合并两个list
-        List<String> mergedList = Stream.concat(transferIdList.stream(), cpapInfoList.stream()).collect(Collectors.toList());
-        // 获取交集
-        Set<String> set2 = new HashSet<>(transferIdList);
-        List<String> intersection = cpapInfoList.stream().filter(set2::contains).collect(Collectors.toList());
-        // 合并两个map
-        Map<String, Transfer> mergedMap = new HashMap<>(transferMap);
-        mergedMap.putAll(cpapDeptInfoMap);
-        for (String patientId : mergedList) {
-            EmrVitalSignsRecord record = new EmrVitalSignsRecord();
-            R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patientId);
-            PatMasterIndex patMasterIndex = medrecResult.getData();
-            if (R.SUCCESS == medrecResult.getCode() && patMasterIndex != null) {
-                // 更新推送患者信息
-                EmrPatientInfo info = hubToolService.syncPatInfo(medrecResult.getData());
-                DictDisDept dictDisDept = dictDisDeptService.getCacheDisDept(DEPT_STAYED);
-                String serialNumber = DigestUtil.md5Hex(DateUtils.dateTimeNow(DateUtils.YYYYMMDD) + info.getId() + info.getPatientName());
-                buildBaseInfo(record, info, serialNumber);
-                record.setDeptCode(dictDisDept.getEmrCode());
-                record.setDeptName(dictDisDept.getEmrName());
-                Transfer tran = mergedMap.get(patientId);
-                Users user = commConvertService.getUserByName(tran.getDoctorInCharge());
-                record.setOperatorId(user.getUserId());
-                if (intersection.contains(patientId)){
-                    // CPAP ICU
-                    record.setVentilatorusedCode("1");
-                    record.setVentilatorusedName("是");
-                    record.setCriticalCareCode("1");
-                    record.setCriticalCareName("是");
-                } else if (transferIdList.contains(patientId)){
-                    // ICU
-                    record.setVentilatorusedCode("0");
-                    record.setVentilatorusedName("否");
-                    record.setCriticalCareCode("1");
-                    record.setCriticalCareName("是");
-                } else {
-                    // CPAP
-                    record.setVentilatorusedCode("1");
-                    record.setVentilatorusedName("是");
-                    record.setCriticalCareCode("0");
-                    record.setCriticalCareName("否");
-                    DictDisDept disDept = dictDisDeptService.getCacheDisDept(tran.getDeptStayed());
-                    record.setDeptCode(disDept.getEmrCode());
-                    record.setDeptName(disDept.getEmrName());
-
-                }
-                String key = getICUAndCPAPCacheKey(patientId) + DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD);
-                EmrVitalSignsRecord cacheRecord = redisCache.getCacheObject(key);
-                if (null == cacheRecord || !record.equalsNoDate(cacheRecord)) {
-                    // 同步患者信息
-                    hubToolService.syncPatInfo(patMasterIndex);
-                    // 同步诊疗活动信息
-                    sendActivityInfo(record, tran.getDeptStayed());
-                    // 同步生命体征记录
-                    synchroEmrMonitorService.syncEmrVitalSignsRecord(record, Constants.HTTP_METHOD_POST);
-                    redisCache.setCacheObject(key, record, 24, TimeUnit.HOURS);
-                } else {
-                    logger.info("生命体征护理记录单emr_vital_signs_record，患者ID：{} 已同步", patientId);
-                }
-            } else {
-                logger.error("PAT_MASTER_INDEX表患者ID查询失败,{}", patientId);
-            }
-
-        }
-
     }
 
     private void buildBaseInfo(EmrVitalSignsRecord record, EmrPatientInfo info, String serialNumber) {

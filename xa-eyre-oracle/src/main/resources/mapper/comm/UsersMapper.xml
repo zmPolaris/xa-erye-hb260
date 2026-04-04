@@ -114,4 +114,27 @@
       STOP_DATE = #{stopDate,jdbcType=TIMESTAMP}
     where DB_USER = #{dbUser,jdbcType=VARCHAR}
   </update>
+
+  <select id="selectUserByName" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from COMM.USERS u
+    where u.USER_NAME = #{userName,jdbcType=VARCHAR}
+    or u.DB_USER = #{userName,jdbcType=VARCHAR}
+    order by u.CREATE_DATE desc
+  </select>
+  <select id="selectUserList" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from (select
+    <include refid="Base_Column_List" />
+    from COMM.USERS
+    ORDER BY CREATE_DATE DESC)
+    WHERE ROWNUM <![CDATA[ <= ]]> #{num,jdbcType=INTEGER}
+  </select>
+  <select id="selectUserAll" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from USERS
+  </select>
 </mapper>

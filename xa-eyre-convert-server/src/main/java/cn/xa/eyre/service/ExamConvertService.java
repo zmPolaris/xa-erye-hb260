@@ -106,7 +106,7 @@ public class ExamConvertService {
                     emrExClinical.setWardNo(hospitalResult.getData().getWardCode());
                     emrExClinical.setBedNo(String.valueOf(hospitalResult.getData().getBedNo()));
                 }
-            }else if("1".equals(examMaster.getPatientSource()) || StringUtils.isNotBlank(examMaster.getVisitNo())){
+            }else if("1".equals(examMaster.getPatientSource()) || examMaster.getVisitNo() != null){
                 emrExClinical.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getCode());
                 emrExClinical.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_OUTPATIENT.getName());
                 emrExClinical.setSerialNumber(DigestUtil.md5Hex(examMaster.getPatientId() + examMaster.getVisitNo()));

@@ -42,14 +42,8 @@ public interface MedrecFeignClient {
     @PostMapping("/medrec/selectPatVisitDeathInfoList")
     public R<List<PatVisit>> selectPatVisitDeathInfoList();
 
-    @PostMapping("/medrec/getTransfer")
-    public R<List<Transfer>> getTransfer();
-
-    @PostMapping("/medrec/getCPAPDeptInfo")
-    public R<List<Transfer>> getCPAPDeptInfo(@RequestBody List<String> cpapInfoList);
-
-    @PostMapping("/medrec/getDiagnosticDescCode")
-    public R<DiagnosticDescCode> getDiagnosticDescCode(@RequestBody String patientId);
+//    @PostMapping("/medrec/getDiagnosticDescCode")
+//    public R<DiagnosticDescCode> getDiagnosticDescCode(@RequestBody String patientId);
 
     @GetMapping("/medrec/getIdNo/{patientId}")
     public R<String> getIdNo(@PathVariable("patientId") String patientId);

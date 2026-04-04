@@ -9,6 +9,15 @@ public class DiagnosisKey {
 
     private Short diagnosisNo;
 
+    public DiagnosisKey() {
+    }
+
+    public DiagnosisKey(String patientId, Short visitId, String diagnosisType) {
+        this.patientId = patientId;
+        this.visitId = visitId;
+        this.diagnosisType = diagnosisType;
+    }
+
     public String getPatientId() {
         return patientId;
     }

@@ -174,4 +174,14 @@
       and DIAGNOSIS_TYPE = #{diagnosisType,jdbcType=VARCHAR}
       and DIAGNOSIS_NO = #{diagnosisNo,jdbcType=NUMERIC}
   </update>
+
+  <select id="selectByPartPrimaryKey" parameterType="cn.xa.eyre.medrec.domain.DiagnosisKey" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from DIAGNOSIS
+    where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
+    and VISIT_ID = #{visitId,jdbcType=NUMERIC}
+    and DIAGNOSIS_TYPE = #{diagnosisType,jdbcType=VARCHAR}
+    order by DIAGNOSIS_DATE desc
+  </select>
 </mapper>

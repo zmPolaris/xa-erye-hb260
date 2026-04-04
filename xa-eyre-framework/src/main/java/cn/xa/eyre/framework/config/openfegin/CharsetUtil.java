@@ -16,12 +16,13 @@ public class CharsetUtil {
             return null;
         }
         List<Object> list = (List<Object>) object;
-        list.replaceAll(item -> convertObject(item));
+//        list.replaceAll(item -> convertObject(item));
         return list;
     }
 
     public static Object convertObject(Object obj){
-        if (ObjectUtil.isEmpty(obj)){
+        return obj;
+        /*if (ObjectUtil.isEmpty(obj)){
             return null;
         }
         try {
@@ -37,10 +38,11 @@ public class CharsetUtil {
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return obj;
-        }
+        }*/
     }
     public static String convertToChinese(String garbledText) {
-        try {
+        return garbledText;
+        /*try {
             if (!containsGarbledChars(garbledText)){
                 return garbledText;
             }
@@ -57,7 +59,7 @@ public class CharsetUtil {
             return garbledText; // 无法解码时返回原值
         } catch (UnsupportedEncodingException e) {
             return garbledText;
-        }
+        }*/
     }
 
     // 检测是否仍包含乱码字符

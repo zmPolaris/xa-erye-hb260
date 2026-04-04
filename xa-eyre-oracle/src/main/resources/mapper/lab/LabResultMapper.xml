@@ -197,4 +197,11 @@
       and ITEM_NO = #{itemNo,jdbcType=NUMERIC}
       and PRINT_ORDER = #{printOrder,jdbcType=NUMERIC}
   </update>
+
+  <select id="selectByTestNo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from LAB_RESULT
+    where TEST_NO = #{testNo,jdbcType=VARCHAR}
+  </select>
 </mapper>
