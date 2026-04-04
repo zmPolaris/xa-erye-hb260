@@ -28,29 +28,7 @@ public class DrugPrescDetail {
 
     private BigDecimal payments;
 
-    private Short orderNo;
 
-    private Short orderSubNo;
-
-    private String administration;
-
-    private Short flag;
-
-    private BigDecimal dosageEach;
-
-    private String dosageUnits;
-
-    private String frequency;
-
-    private String freqDetail;
-
-    private String batchNo;
-
-    private BigDecimal inventory;
-
-    private String prescDateStr;
-
-    private String prescDateShortStr;
 
     public Date getPrescDate() {
         return prescDate;
@@ -148,99 +126,5 @@ public class DrugPrescDetail {
         this.payments = payments;
     }
 
-    public Short getOrderNo() {
-        return orderNo;
-    }
 
-    public void setOrderNo(Short orderNo) {
-        this.orderNo = orderNo;
-    }
-
-    public Short getOrderSubNo() {
-        return orderSubNo;
-    }
-
-    public void setOrderSubNo(Short orderSubNo) {
-        this.orderSubNo = orderSubNo;
-    }
-
-    public String getAdministration() {
-        return administration;
-    }
-
-    public void setAdministration(String administration) {
-        this.administration = administration == null ? null : administration.trim();
-    }
-
-    public Short getFlag() {
-        return flag;
-    }
-
-    public void setFlag(Short flag) {
-        this.flag = flag;
-    }
-
-    public BigDecimal getDosageEach() {
-        return dosageEach;
-    }
-
-    public void setDosageEach(BigDecimal dosageEach) {
-        this.dosageEach = dosageEach;
-    }
-
-    public String getDosageUnits() {
-        return dosageUnits;
-    }
-
-    public void setDosageUnits(String dosageUnits) {
-        this.dosageUnits = dosageUnits == null ? null : dosageUnits.trim();
-    }
-
-    public String getFrequency() {
-        return frequency;
-    }
-
-    public void setFrequency(String frequency) {
-        this.frequency = frequency == null ? null : frequency.trim();
-    }
-
-    public String getFreqDetail() {
-        return freqDetail;
-    }
-
-    public void setFreqDetail(String freqDetail) {
-        this.freqDetail = freqDetail == null ? null : freqDetail.trim();
-    }
-
-    public String getBatchNo() {
-        return batchNo;
-    }
-
-    public void setBatchNo(String batchNo) {
-        this.batchNo = batchNo == null ? null : batchNo.trim();
-    }
-
-    public BigDecimal getInventory() {
-        return inventory;
-    }
-
-    public void setInventory(BigDecimal inventory) {
-        this.inventory = inventory;
-    }
-
-    public String getPrescDateStr() {
-        return prescDateStr;
-    }
-
-    public void setPrescDateStr(String prescDateStr) {
-        this.prescDateStr = prescDateStr;
-    }
-
-    public String getPrescDateShortStr() {
-        return prescDateShortStr;
-    }
-
-    public void setPrescDateShortStr(String prescDateShortStr) {
-        this.prescDateShortStr = prescDateShortStr;
-    }
 }
