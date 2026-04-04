@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.xa.eyre.comm.mapper.DiagnosisDictMapper">
+  <resultMap id="BaseResultMap" type="cn.xa.eyre.comm.domain.DiagnosisDict">
+    <id column="DIAGNOSIS_CODE" jdbcType="VARCHAR" property="diagnosisCode" />
+    <id column="DIAGNOSIS_NAME" jdbcType="VARCHAR" property="diagnosisName" />
+    <id column="CODE_VERSION" jdbcType="VARCHAR" property="codeVersion" />
+    <result column="STD_INDICATOR" jdbcType="NUMERIC" property="stdIndicator" />
+    <result column="APPROVED_INDICATOR" jdbcType="NUMERIC" property="approvedIndicator" />
+    <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="INPUT_CODE" jdbcType="VARCHAR" property="inputCode" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    DIAGNOSIS_CODE, DIAGNOSIS_NAME, CODE_VERSION, STD_INDICATOR, APPROVED_INDICATOR, 
+    CREATE_DATE, INPUT_CODE
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="cn.xa.eyre.comm.domain.DiagnosisDictKey" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from DIAGNOSIS_DICT
+    where DIAGNOSIS_CODE = #{diagnosisCode,jdbcType=VARCHAR}
+      and DIAGNOSIS_NAME = #{diagnosisName,jdbcType=VARCHAR}
+      and CODE_VERSION = #{codeVersion,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="cn.xa.eyre.comm.domain.DiagnosisDictKey">
+    delete from DIAGNOSIS_DICT
+    where DIAGNOSIS_CODE = #{diagnosisCode,jdbcType=VARCHAR}
+      and DIAGNOSIS_NAME = #{diagnosisName,jdbcType=VARCHAR}
+      and CODE_VERSION = #{codeVersion,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="cn.xa.eyre.comm.domain.DiagnosisDict">
+    insert into DIAGNOSIS_DICT (DIAGNOSIS_CODE, DIAGNOSIS_NAME, CODE_VERSION, 
+      STD_INDICATOR, APPROVED_INDICATOR, CREATE_DATE, 
+      INPUT_CODE)
+    values (#{diagnosisCode,jdbcType=VARCHAR}, #{diagnosisName,jdbcType=VARCHAR}, #{codeVersion,jdbcType=VARCHAR}, 
+      #{stdIndicator,jdbcType=NUMERIC}, #{approvedIndicator,jdbcType=NUMERIC}, #{createDate,jdbcType=TIMESTAMP}, 
+      #{inputCode,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="cn.xa.eyre.comm.domain.DiagnosisDict">
+    insert into DIAGNOSIS_DICT
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="diagnosisCode != null">
+        DIAGNOSIS_CODE,
+      </if>
+      <if test="diagnosisName != null">
+        DIAGNOSIS_NAME,
+      </if>
+      <if test="codeVersion != null">
+        CODE_VERSION,
+      </if>
+      <if test="stdIndicator != null">
+        STD_INDICATOR,
+      </if>
+      <if test="approvedIndicator != null">
+        APPROVED_INDICATOR,
+      </if>
+      <if test="createDate != null">
+        CREATE_DATE,
+      </if>
+      <if test="inputCode != null">
+        INPUT_CODE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="diagnosisCode != null">
+        #{diagnosisCode,jdbcType=VARCHAR},
+      </if>
+      <if test="diagnosisName != null">
+        #{diagnosisName,jdbcType=VARCHAR},
+      </if>
+      <if test="codeVersion != null">
+        #{codeVersion,jdbcType=VARCHAR},
+      </if>
+      <if test="stdIndicator != null">
+        #{stdIndicator,jdbcType=NUMERIC},
+      </if>
+      <if test="approvedIndicator != null">
+        #{approvedIndicator,jdbcType=NUMERIC},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inputCode != null">
+        #{inputCode,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="cn.xa.eyre.comm.domain.DiagnosisDict">
+    update DIAGNOSIS_DICT
+    <set>
+      <if test="stdIndicator != null">
+        STD_INDICATOR = #{stdIndicator,jdbcType=NUMERIC},
+      </if>
+      <if test="approvedIndicator != null">
+        APPROVED_INDICATOR = #{approvedIndicator,jdbcType=NUMERIC},
+      </if>
+      <if test="createDate != null">
+        CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="inputCode != null">
+        INPUT_CODE = #{inputCode,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where DIAGNOSIS_CODE = #{diagnosisCode,jdbcType=VARCHAR}
+      and DIAGNOSIS_NAME = #{diagnosisName,jdbcType=VARCHAR}
+      and CODE_VERSION = #{codeVersion,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.comm.domain.DiagnosisDict">
+    update DIAGNOSIS_DICT
+    set STD_INDICATOR = #{stdIndicator,jdbcType=NUMERIC},
+      APPROVED_INDICATOR = #{approvedIndicator,jdbcType=NUMERIC},
+      CREATE_DATE = #{createDate,jdbcType=TIMESTAMP},
+      INPUT_CODE = #{inputCode,jdbcType=VARCHAR}
+    where DIAGNOSIS_CODE = #{diagnosisCode,jdbcType=VARCHAR}
+      and DIAGNOSIS_NAME = #{diagnosisName,jdbcType=VARCHAR}
+      and CODE_VERSION = #{codeVersion,jdbcType=VARCHAR}
+  </update>
+</mapper>
