@@ -22,6 +22,7 @@ import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpadm.domain.ClinicMaster;
+import cn.xa.eyre.outpdoct.domain.OutpDiagnosisYb;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
@@ -141,16 +142,21 @@ public class OutpdoctConvertService {
             emrOutpatientRecord.setPhysicalExamination(outpMr.getBodyExam());
 
             // 诊断代码
-            if (StringUtils.isBlank(outpMr.getDiagCode())){
-                // 诊断代码分组匹配
-                String[] diagCodes = outpMr.getDiagCode().split("&");
-                String[] diagNames = outpMr.getDiagDesc().split("&");
-//                    dictDiseaseIcd10Mapper.selectByEmrCodeList(diagCodes);
+            OutpDiagnosisYb outpDiagnosisYb = new OutpDiagnosisYb();
+            R<List<OutpDiagnosisYb>> outpDiagYbResult = outpdoctFeignClient.getOutpDiagYbByCondition(outpDiagnosisYb);
+            if (R.SUCCESS == outpDiagYbResult.getCode() && outpDiagYbResult.getData() != null){
+                List<OutpDiagnosisYb> outpDiagnosisYbList = outpDiagYbResult.getData();
                 List<DictDiseaseIcd10> codes = new ArrayList<>();
-                for (int i = 0; i < diagCodes.length; i++) {
-                    DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagCodes[i], diagNames[i]);
+                // 查不到推送其他
+                if(outpDiagnosisYbList.isEmpty()){
+                    DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getCode(), HubCodeEnum.DISEASE_ICD10_CODE_DEFAULT.getName());
                     codes.add(dictDiseaseIcd10);
                 }
+                for (OutpDiagnosisYb diag : outpDiagnosisYbList) {
+                    DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diag.getDiagCode(), diag.getDiagDesc());
+                    codes.add(dictDiseaseIcd10);
+                }
+
                 emrOutpatientRecord.setWmDiagnosisCode(codes.stream().map(DictDiseaseIcd10::getHubCode).collect(Collectors.joining("||")));
                 emrOutpatientRecord.setWmDiagnosisName(codes.stream().map(DictDiseaseIcd10::getHubName).collect(Collectors.joining("||")));
 

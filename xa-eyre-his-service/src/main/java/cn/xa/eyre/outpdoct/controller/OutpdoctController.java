@@ -2,7 +2,9 @@ package cn.xa.eyre.outpdoct.controller;
 
 import cn.xa.eyre.common.core.domain.AjaxResult;
 import cn.xa.eyre.framework.config.openfegin.CharsetUtil;
+import cn.xa.eyre.outpdoct.domain.OutpDiagnosisYb;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
+import cn.xa.eyre.outpdoct.mapper.OutpDiagnosisYbMapper;
 import cn.xa.eyre.outpdoct.mapper.OutpMrMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,9 @@ public class OutpdoctController {
 
     @Autowired
     private OutpMrMapper outpMrMapper;
+
+    @Autowired
+    private OutpDiagnosisYbMapper outpDiagnosisYbMapper;
 
     @GetMapping("/getOutpMrList")
     public AjaxResult getOutpMrList(@RequestParam("num") Integer num){
@@ -35,6 +40,11 @@ public class OutpdoctController {
     @PostMapping("/selectByPrimaryKey")
     public AjaxResult selectByPrimaryKey(@RequestBody OutpMr outpMr){
         return AjaxResult.success("接口调用成功", outpMrMapper.selectByPrimaryKey(outpMr));
+    }
+
+    @PostMapping("/getOutpDiagYbByCondition")
+    public AjaxResult getOutpDiagYbByCondition(@RequestBody OutpDiagnosisYb outpDiagnosisYbVo){
+        return AjaxResult.success("接口调用成功", outpDiagnosisYbMapper.selectOutpDiagYbByCondition(outpDiagnosisYbVo));
     }
 
 }

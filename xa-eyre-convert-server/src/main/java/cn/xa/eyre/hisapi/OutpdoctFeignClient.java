@@ -3,6 +3,7 @@ package cn.xa.eyre.hisapi;
 
 import cn.xa.eyre.common.constant.Constants;
 import cn.xa.eyre.common.core.domain.R;
+import cn.xa.eyre.outpdoct.domain.OutpDiagnosisYb;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Component;
@@ -29,5 +30,6 @@ public interface OutpdoctFeignClient {
     @PostMapping("/outpdoct/selectByPrimaryKey")
     public R<OutpMr> selectByPrimaryKey(@RequestBody OutpMr outpMr);
 
-
+    @PostMapping("/outpdoct/getOutpDiagYbByCondition")
+    public R<List<OutpDiagnosisYb>> getOutpDiagYbByCondition(@RequestBody OutpDiagnosisYb outpDiagnosisYb);
 }
