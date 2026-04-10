@@ -62,7 +62,7 @@ public class DataConvertService {
             for (DictTemp temp: hubList) {
                 if(temp.getName().equals(hisName)){
                     exist = true;
-//                    dictDisDept.setRemark("精准匹配");
+                    dictDisDept.setRemark("精准匹配");
                     dictDisDept.setEmrCode(his.getDeptCode());
                     dictDisDept.setEmrName(his.getDeptName());
                     dictDisDept.setHubCode(temp.getCode());
@@ -76,7 +76,7 @@ public class DataConvertService {
                 for (DictTemp temp: hubList) {
                     if (FuzzyMatcher.fuzzyMatch(temp.getName(), hisName)) {
                         exist = true;
-//                        dictDisDept.setRemark("模糊匹配");
+                        dictDisDept.setRemark("模糊匹配");
                         dictDisDept.setEmrCode(his.getDeptCode());
                         dictDisDept.setEmrName(his.getDeptName());
                         dictDisDept.setHubCode(temp.getCode());
@@ -88,7 +88,7 @@ public class DataConvertService {
 
             // 没找到
             if(!exist){
-//                dictDisDept.setRemark("在前置软件中没有同名的");
+                dictDisDept.setRemark("在前置软件中没有同名的");
                 dictDisDept.setEmrCode(his.getDeptCode());
                 dictDisDept.setEmrName(his.getDeptName());
                 dictDisDept.setHubCode("D99");
