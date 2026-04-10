@@ -293,4 +293,11 @@
     </where>
 
   </select>
+  <select id="selectOutpMrByVisitDate" resultMap="BaseResultMap">
+    select
+      PATIENT_ID, VISIT_DATE ,VISIT_NO ,ORDINAL
+    from OUTPDOCT.OUTP_MR
+    where VISIT_DATE = TO_DATE(#{visitDate,jdbcType=VARCHAR}, 'YYYY/MM/DD')
+
+  </select>
 </mapper>

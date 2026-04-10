@@ -23,7 +23,6 @@ import cn.xa.eyre.medrec.domain.PatMasterIndex;
 //import cn.xa.eyre.medrec.domain.Transfer;
 import cn.xa.eyre.ordadm.domain.Orders;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
-import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import cn.xa.eyre.system.dict.service.DictDisDeptService;
 import com.alibaba.fastjson.JSON;

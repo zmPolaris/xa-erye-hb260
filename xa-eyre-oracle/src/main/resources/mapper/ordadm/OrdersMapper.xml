@@ -494,6 +494,13 @@
       and ORDER_NO = #{orderNo,jdbcType=NUMERIC}
       and ORDER_SUB_NO = #{orderSubNo,jdbcType=NUMERIC}
   </update>
+  <select id="getDeathInfo" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from ORDADM.ORDERS
+    where ORDER_CLASS ='E' and ORDER_CODE = 'Z0052' and
+    ENTER_DATE_TIME <![CDATA[>=]]> TRUNC(SYSDATE) AND ENTER_DATE_TIME <![CDATA[<]]> TRUNC(SYSDATE)+1
+  </select>
   <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.ordadm.domain.Orders">
     update ORDERS
     set REPEAT_INDICATOR = #{repeatIndicator,jdbcType=NUMERIC},

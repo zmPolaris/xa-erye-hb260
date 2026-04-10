@@ -91,10 +91,10 @@ public class KafkaConsumerService {
         logger.info("  来源: {}.{}.{}", db, schema, table);
         logger.info("  时间戳: {}", tsMs);
         Date operateDate = new Date(tsMs);
-        Date targetDate = DateUtils.parseDate("2025-08-13 16:00:00");
-        if (targetDate.after(operateDate)){
-            return null;
-        }
+//        Date targetDate = DateUtils.parseDate("2025-08-13 16:00:00");
+//        if (targetDate.after(operateDate)){
+//            return null;
+//        }
         // 解析变更数据
         GenericRecord before = (GenericRecord) valueRecord.get("before");
         GenericRecord after = (GenericRecord) valueRecord.get("after");

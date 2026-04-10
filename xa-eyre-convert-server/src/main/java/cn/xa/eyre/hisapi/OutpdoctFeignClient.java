@@ -23,4 +23,11 @@ public interface OutpdoctFeignClient {
     @PostMapping("/outpdoct/getOutpMrByCondition")
     public R<List<OutpMr>> getOutpMrByCondition(@RequestBody OutpMr outpMr);
 
+    @PostMapping("/outpdoct/getOutpMrByVisitDate")
+    public R<List<OutpMr>> getOutpMrByVisitDate(@RequestBody String visitDate);
+
+    @PostMapping("/outpdoct/selectByPrimaryKey")
+    public R<OutpMr> selectByPrimaryKey(@RequestBody OutpMr outpMr);
+
+
 }
