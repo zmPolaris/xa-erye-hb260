@@ -28,6 +28,9 @@ public class DrugPrescDetail {
 
     private BigDecimal payments;
 
+    private String prescDateStr;
+
+    private String prescDateShortStr;
 
 
     public Date getPrescDate() {
@@ -126,5 +129,19 @@ public class DrugPrescDetail {
         this.payments = payments;
     }
 
+    public String getPrescDateStr() {
+        return prescDateStr;
+    }
 
+    public void setPrescDateStr(String prescDateStr) {
+        this.prescDateStr = prescDateStr;
+    }
+
+    public String getPrescDateShortStr() {
+        return prescDateShortStr;
+    }
+
+    public void setPrescDateShortStr(String prescDateShortStr) {
+        this.prescDateShortStr = prescDateShortStr;
+    }
 }

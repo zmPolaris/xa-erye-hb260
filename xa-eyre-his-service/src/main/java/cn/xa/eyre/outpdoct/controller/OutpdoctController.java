@@ -25,4 +25,16 @@ public class OutpdoctController {
     public AjaxResult getOutpMrByCondition(@RequestBody OutpMr outpMr){
         return AjaxResult.success("接口调用成功", CharsetUtil.convertObjectList(outpMrMapper.selectOutpMrByCondition(outpMr)));
     }
+
+
+    @PostMapping("/getOutpMrByVisitDate")
+    public AjaxResult getOutpMrByVisitDate(@RequestBody String visitDate){
+        return AjaxResult.success("接口调用成功", outpMrMapper.selectOutpMrByVisitDate(visitDate));
+    }
+
+    @PostMapping("/selectByPrimaryKey")
+    public AjaxResult selectByPrimaryKey(@RequestBody OutpMr outpMr){
+        return AjaxResult.success("接口调用成功", outpMrMapper.selectByPrimaryKey(outpMr));
+    }
+
 }

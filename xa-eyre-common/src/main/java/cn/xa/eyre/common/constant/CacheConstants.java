@@ -23,6 +23,11 @@ public class CacheConstants
     public static final String SYS_CONFIG_KEY = "sys_config:";
 
     /**
+     * 参数管理 cache key
+     */
+    public static final String TABLE_DATE_KEY = "his_oracle:";
+
+    /**
      * 科室管理 cache key
      */
     public static final String SYS_DICT_DEPT_KEY = "sys_dict_dept:";
