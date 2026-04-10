@@ -208,8 +208,16 @@ public class OutpdoctConvertService {
                 }
                 emrActivityInfo.setSerialNumber(emrOutpatientRecord.getSerialNumber());
                 emrActivityInfo.setActivityTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, outpMr.getVisitDate()));
-                emrActivityInfo.setIdCardTypeCode(emrOutpatientRecord.getIdCardTypeCode());
-                emrActivityInfo.setIdCardTypeName(emrOutpatientRecord.getIdCardTypeName());
+                String idNo = patMasterIndex.getIdNo();
+                if (StringUtils.isNotBlank(idNo)) {
+                    emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
+                    emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
+                    emrActivityInfo.setIdCard(idNo);
+                } else {
+                    emrActivityInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+                    emrActivityInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+                    emrActivityInfo.setIdCard("-");
+                }
                 emrActivityInfo.setPatientName(patMasterIndex.getName());
 
                 emrActivityInfo.setChiefComplaint(outpMr.getIllnessDesc());
