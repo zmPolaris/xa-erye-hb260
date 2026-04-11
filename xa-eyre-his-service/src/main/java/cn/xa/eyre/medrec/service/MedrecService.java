@@ -71,9 +71,9 @@ public class MedrecService {
         return patVisitMapper.selectPatVisitDeathInfoList();
     }
 
-//    public DiagnosticDescCode getDiagnosticDescCode(String patientId) {
-//        return diagnosticCategoryMapper.getDiagnosticDescCode(patientId);
-//    }
+    public DiagnosticDescCode getDiagnosticDescCode(String patientId) {
+        return diagnosticCategoryMapper.getDiagnosticDescCode(patientId);
+    }
 
     public String selectIdNo(String patientId) {
         return patMasterIndexMapper.selectIdNo(patientId);

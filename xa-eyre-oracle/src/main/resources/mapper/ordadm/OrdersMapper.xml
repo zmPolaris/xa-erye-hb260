@@ -498,7 +498,7 @@
     select
     <include refid="Base_Column_List" />
     from ORDADM.ORDERS
-    where ORDER_CLASS ='E' and ORDER_CODE = 'Z0052' and
+    where order_text like '%死亡%'
     ENTER_DATE_TIME <![CDATA[>=]]> TRUNC(SYSDATE) AND ENTER_DATE_TIME <![CDATA[<]]> TRUNC(SYSDATE)+1
   </select>
   <update id="updateByPrimaryKey" parameterType="cn.xa.eyre.ordadm.domain.Orders">

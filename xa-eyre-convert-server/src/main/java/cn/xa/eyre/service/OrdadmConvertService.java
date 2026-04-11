@@ -19,10 +19,12 @@ import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 //import cn.xa.eyre.medrec.domain.DiagnosticDescCode;
+import cn.xa.eyre.medrec.domain.DiagnosticDescCode;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 //import cn.xa.eyre.medrec.domain.Transfer;
 import cn.xa.eyre.ordadm.domain.Orders;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
+import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import cn.xa.eyre.system.dict.service.DictDisDeptService;
 import com.alibaba.fastjson.JSON;
@@ -129,21 +131,21 @@ public class OrdadmConvertService {
                 emrDeathInfo.setIdCardTypeCode(patMasterIndex.getIdentity());
                 emrDeathInfo.setIdCardTypeName(patMasterIndex.getIdentity());
                 emrDeathInfo.setDeadDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, order.getEnterDateTime()));
-//                R<DiagnosticDescCode> descCode = medrecFeignClient.getDiagnosticDescCode(patientId);
-//                if (R.SUCCESS == descCode.getCode() && descCode.getData() != null){
-//                    DiagnosticDescCode codeData = descCode.getData();
-//                    String code = codeData.getDiagnosisCode();
-//                    String diagnosisDesc = codeData.getDiagnosisDesc();
-//                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
-//                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
-//                        emrDeathInfo.setDirectCauseCode(code);
-//                        emrDeathInfo.setDirectCauseName(diagnosisDesc);
-//                    } else {
-//                        emrDeathInfo.setDirectCauseCode(dictDiseaseIcd10.getHubCode());
-//                        emrDeathInfo.setDirectCauseName(dictDiseaseIcd10.getHubName());
-//                        emrDeathInfo.setDeathDiagnosisCode(code);
-//                        emrDeathInfo.setDeathDiagnosisName(diagnosisDesc);
-//                    }
+                R<DiagnosticDescCode> descCode = medrecFeignClient.getDiagnosticDescCode(patientId);
+                if (R.SUCCESS == descCode.getCode() && descCode.getData() != null){
+                    DiagnosticDescCode codeData = descCode.getData();
+                    String code = codeData.getDiagnosisCode();
+                    String diagnosisDesc = codeData.getDiagnosisDesc();
+                    DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
+                    if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+                        emrDeathInfo.setDirectCauseCode(code);
+                        emrDeathInfo.setDirectCauseName(diagnosisDesc);
+                    } else {
+                        emrDeathInfo.setDirectCauseCode(dictDiseaseIcd10.getHubCode());
+                        emrDeathInfo.setDirectCauseName(dictDiseaseIcd10.getHubName());
+                        emrDeathInfo.setDeathDiagnosisCode(code);
+                        emrDeathInfo.setDeathDiagnosisName(diagnosisDesc);
+                    }
                     Users user = commConvertService.getUserByName(order.getDoctor());
                     emrDeathInfo.setChiefPhysicianId(user.getUserId());
                     emrDeathInfo.setOrgCode(HubCodeEnum.ORG_CODE.getCode());
@@ -168,9 +170,9 @@ public class OrdadmConvertService {
                         logger.info("死亡信息emr_death_info，患者ID：{} 已同步", patientId);
                     }
 
-//                } else {
-//                    logger.error("获取诊断描述失败！患者ID：{}", patientId);
-//                }
+                } else {
+                    logger.error("获取诊断描述失败！患者ID：{}", patientId);
+                }
 
             } else {
                 logger.error("获取死亡信息失败！患者ID：{}", patientId);
