@@ -22,6 +22,7 @@ import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.DiagnosticDescCode;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 //import cn.xa.eyre.medrec.domain.Transfer;
+import cn.xa.eyre.medrec.domain.PatVisit;
 import cn.xa.eyre.ordadm.domain.Orders;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
@@ -44,7 +45,6 @@ import java.util.stream.Stream;
 @Service
 public class OrdadmConvertService {
     private static final String ORDERS_PATIENT_IDS = "ORDERS_PATIENT_IDS";
-    public static final String DEPT_STAYED = "113001";
     Logger logger = LoggerFactory.getLogger(OrdadmConvertService.class);
     @Autowired
     OrdadmFeignClient ordadmFeignClient;
@@ -206,6 +206,67 @@ public class OrdadmConvertService {
         emrActivityInfo.setOrgName(emrDeathInfo.getOrgName());
         emrActivityInfo.setOperationTime(DateUtils.getTime());
         synchroEmrRealService.syncEmrActivityInfo(emrActivityInfo, Constants.HTTP_METHOD_POST);
+    }
+
+    @Scheduled(cron = "0 55 7,15,23 * * ?")
+    public void emrVitalSignsRecord() {
+        logger.debug("生命体征护理记录单emr_vital_signs_record定时任务执行接口, {}", DateUtils.getNowDate());
+        R<List<PatVisit>> icuOrCpapInfo = medrecFeignClient.getICUOrCPAPInfo();
+        List<PatVisit> patVisitList = icuOrCpapInfo.getData();
+        List<String> transferIdList = new ArrayList<>();
+        if (R.SUCCESS != icuOrCpapInfo.getCode() || null == patVisitList  || patVisitList.isEmpty()) {
+            logger.debug("未找到(ICU/呼吸机)数据");
+            return;
+        }
+
+        for (PatVisit patVisit : patVisitList) {
+            EmrVitalSignsRecord record = new EmrVitalSignsRecord();
+            R<PatMasterIndex> medrecResult = medrecFeignClient.getPatMasterIndex(patVisit.getPatientId());
+            PatMasterIndex patMasterIndex = medrecResult.getData();
+            if (R.SUCCESS == medrecResult.getCode() && patMasterIndex != null) {
+                String key = getICUAndCPAPCacheKey(patVisit.getPatientId()) + DateUtils.dateTimeNow(DateUtils.YYYY_MM_DD);
+                EmrVitalSignsRecord cacheRecord = redisCache.getCacheObject(key);
+                if (null != cacheRecord || record.equalsNoDate(cacheRecord)) {
+                    logger.info("生命体征护理记录单emr_vital_signs_record，患者ID：{} 已同步", patVisit.getPatientId());
+                    continue;
+                }
+
+                // 更新推送患者信息
+                EmrPatientInfo info = hubToolService.syncPatInfo(medrecResult.getData());
+                DictDisDept dictDisDept = dictDisDeptService.getCacheDisDept(patVisit.getDeptAdmissionTo());
+                String serialNumber = DigestUtil.md5Hex(DateUtils.dateTimeNow(DateUtils.YYYYMMDD) + info.getId() + info.getPatientName());
+                buildBaseInfo(record, info, serialNumber);
+                record.setDeptCode(dictDisDept.getHubCode());
+                record.setDeptName(dictDisDept.getHubName());
+                Users user = commConvertService.getUserByName(patVisit.getDoctorInCharge());
+                record.setOperatorId(user.getUserId());
+                record.setVentilatorusedCode("0");
+                record.setVentilatorusedName("否");
+                record.setCriticalCareCode("0");
+                record.setCriticalCareName("否");
+                if (patVisit.getIcuDays() > 0) {
+                    record.setCriticalCareCode("1");
+                    record.setCriticalCareName("是");
+                }
+                if (patVisit.getVentUsedDay() > 0 ||patVisit.getVentUsedHour() > 0 || patVisit.getVentUsedMin() > 0 ) {
+                    record.setVentilatorusedCode("1");
+                    record.setVentilatorusedName("是");
+                }
+
+                // 同步患者信息
+                hubToolService.syncPatInfo(patMasterIndex);
+                // 同步诊疗活动信息
+                sendActivityInfo(record, patVisit.getDeptAdmissionTo());
+                // 同步生命体征记录
+                synchroEmrMonitorService.syncEmrVitalSignsRecord(record, Constants.HTTP_METHOD_POST);
+                redisCache.setCacheObject(key, record, 24, TimeUnit.HOURS);
+
+            } else {
+                logger.error("PAT_MASTER_INDEX表患者ID查询失败,{}", patVisit.getPatientId());
+            }
+
+        }
+
     }
 
     private void buildBaseInfo(EmrVitalSignsRecord record, EmrPatientInfo info, String serialNumber) {

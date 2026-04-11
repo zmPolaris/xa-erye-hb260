@@ -47,4 +47,7 @@ public interface MedrecFeignClient {
 
     @GetMapping("/medrec/getIdNo/{patientId}")
     public R<String> getIdNo(@PathVariable("patientId") String patientId);
+
+    @PostMapping("/medrec/getICUOrCPAPInfo")
+    public R<List<PatVisit>> getICUOrCPAPInfo();
 }

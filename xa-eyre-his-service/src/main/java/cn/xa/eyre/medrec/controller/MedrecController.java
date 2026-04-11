@@ -80,10 +80,10 @@ public class MedrecController {
         return AjaxResult.success("接口调用成功", CharsetUtil.convertObjectList(medrecService.selectPatVisitDeathInfoList()));
     };
 
-    /*@PostMapping("/getCPAPDeptInfo")
-    public AjaxResult getCPAPDeptInfo(@RequestBody List<String> cpapInfoList){
-        return AjaxResult.success("接口调用成功", CharsetUtil.convertObjectList(medrecService.getCPAPDeptInfo(cpapInfoList)));
-    }*/
+    @PostMapping("/getICUOrCPAPInfo")
+    public AjaxResult getICUOrCPAPInfo(){
+        return AjaxResult.success("接口调用成功", CharsetUtil.convertObjectList(medrecService.getICUOrCPAPInfo()));
+    }
 
     @PostMapping("/getDiagnosticDescCode")
     public AjaxResult getDiagnosticDescCode(@RequestBody String patientId){

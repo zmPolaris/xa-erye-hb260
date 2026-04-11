@@ -1400,6 +1400,16 @@
       and VISIT_ID = #{visitId,jdbcType=NUMERIC}
   </update>
 
+  <select id="getICUOrCPAPInfo" resultMap="BaseResultMap">
+    select
+      PATIENT_ID, DEPT_ADMISSION_TO, DOCTOR_IN_CHARGE, ICU_DAYS, VENT_USED_DAY, VENT_USED_HOUR, VENT_USED_MIN, DISCHARGE_DATE_TIME
+    from PAT_VISIT
+    where ICU_DAYS > 0 or  VENT_USED_DAY > 0 or VENT_USED_HOUR > 0 or VENT_USED_MIN > 0
+    and ((DISCHARGE_DATE_TIME <![CDATA[>=]]>  TRUNC(SYSDATE) AND DISCHARGE_DATE_TIME <![CDATA[<]]> TRUNC(SYSDATE)+1)
+    or DISCHARGE_DATE_TIME is null )
+  </select>
+
+
   <select id="selectPatVisitDeathInfoList" resultType="cn.xa.eyre.medrec.domain.PatVisit">
     select
     <include refid="Base_Column_List" />

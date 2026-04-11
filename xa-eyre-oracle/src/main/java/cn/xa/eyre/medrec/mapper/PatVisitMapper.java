@@ -21,4 +21,6 @@ public interface PatVisitMapper {
     List<PatVisit> selectPatVisitDeathInfoList();
 
     PatVisit selectByPatientIdOrderByVisitIdLimit1(String patientId);
+
+    List<PatVisit> getICUOrCPAPInfo();
 }
