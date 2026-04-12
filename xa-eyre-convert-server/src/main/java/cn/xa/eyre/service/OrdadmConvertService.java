@@ -244,11 +244,13 @@ public class OrdadmConvertService {
                 record.setVentilatorusedName("否");
                 record.setCriticalCareCode("0");
                 record.setCriticalCareName("否");
-                if (patVisit.getIcuDays() > 0) {
+                if (null != patVisit.getIcuDays() && patVisit.getIcuDays() > 0) {
                     record.setCriticalCareCode("1");
                     record.setCriticalCareName("是");
                 }
-                if (patVisit.getVentUsedDay() > 0 ||patVisit.getVentUsedHour() > 0 || patVisit.getVentUsedMin() > 0 ) {
+                if ((null != patVisit.getVentUsedDay() && patVisit.getVentUsedDay() > 0) ||
+                        (null != patVisit.getVentUsedHour() && patVisit.getVentUsedHour() > 0) ||
+                        (null != patVisit.getVentUsedMin() && patVisit.getVentUsedMin() > 0 )) {
                     record.setVentilatorusedCode("1");
                     record.setVentilatorusedName("是");
                 }
