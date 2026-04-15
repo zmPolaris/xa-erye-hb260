@@ -6,7 +6,7 @@ spring:
         druid:
             # 主库数据源
             master:
-                url: ${DATABASES_URL:jdbc:oracle:thin:@//172.16.200.43:1521/orcldg}
+                url: ${DATABASES_URL:jdbc:oracle:thin:@//172.16.200.51:1521/orcl}
                 username: ${DATABASES_USERNAME:his_to_crbqzrj}
                 password: ${DATABASES_PASSWORD:his_to_crbqzrj}
 #                url: ${DATABASES_URL:jdbc:oracle:thin:@//10.10.5.169:11521/LHR11G}
