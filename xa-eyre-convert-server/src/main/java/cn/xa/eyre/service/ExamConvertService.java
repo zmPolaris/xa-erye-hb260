@@ -147,7 +147,7 @@ public class ExamConvertService {
             if (StringUtils.isBlank(patMasterIndex.getIdNo())){
                 emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                 emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-                emrExClinical.setIdCard(medrecResult.getData().getIdNo());
+                emrExClinical.setIdCard("-");
             }else {
                 emrExClinical.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
                 emrExClinical.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());

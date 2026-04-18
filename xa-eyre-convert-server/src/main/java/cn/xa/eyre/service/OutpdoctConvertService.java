@@ -1,5 +1,6 @@
 package cn.xa.eyre.service;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import cn.xa.eyre.comm.domain.Users;
 import cn.xa.eyre.common.constant.CacheConstants;
@@ -143,6 +144,7 @@ public class OutpdoctConvertService {
 
             // 诊断代码
             OutpDiagnosisYb outpDiagnosisYb = new OutpDiagnosisYb();
+            BeanUtil.copyProperties(outpMr, outpDiagnosisYb);
             R<List<OutpDiagnosisYb>> outpDiagYbResult = outpdoctFeignClient.getOutpDiagYbByCondition(outpDiagnosisYb);
             if (R.SUCCESS == outpDiagYbResult.getCode() && outpDiagYbResult.getData() != null){
                 List<OutpDiagnosisYb> outpDiagnosisYbList = outpDiagYbResult.getData();
@@ -166,14 +168,16 @@ public class OutpdoctConvertService {
                         emrOutpatientRecord.setOperatorId(user.getData().getUserId());
                     }
                 }
-                emrOutpatientRecord.setTreatment(outpMr.getAdvice());
+                if (StringUtils.isNotBlank(outpMr.getAdvice()) && outpMr.getAdvice().length() <= 100){
+                    emrOutpatientRecord.setTreatment(outpMr.getAdvice());
+                }
 
                 PatMasterIndex patMasterIndex = medrecResult.getData();
                 emrOutpatientRecord.setPatientName(patMasterIndex.getName());
                 if (StringUtils.isBlank(patMasterIndex.getIdNo())){
                     emrOutpatientRecord.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                     emrOutpatientRecord.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-                    emrOutpatientRecord.setIdCard(medrecResult.getData().getIdNo());
+                    emrOutpatientRecord.setIdCard("-");
                 }else {
                     emrOutpatientRecord.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
                     emrOutpatientRecord.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());

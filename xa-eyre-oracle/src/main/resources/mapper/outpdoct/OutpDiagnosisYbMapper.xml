@@ -34,7 +34,7 @@
       <include refid="Base_Column_List" />
       from OUTP_DIAGNOSIS_YB
       where PATIENT_ID = #{patientId,jdbcType=VARCHAR}
-      and VISIT_DATE = TO_DATE(#{visitDate,jdbcType=TIMESTAMP}, 'YYYY/MM/DD')
+      and VISIT_DATE = #{visitDate,jdbcType=TIMESTAMP}
       and VISIT_NO = #{visitNo,jdbcType=NUMERIC}
     </select>
 

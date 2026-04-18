@@ -90,8 +90,8 @@ public class MedrecController {
         return AjaxResult.success("接口调用成功", CharsetUtil.convertObject(medrecService.getDiagnosticDescCode(patientId)));
     }
 
-    @GetMapping("/getIdNo/{patientId}")
+    /*@GetMapping("/getIdNo/{patientId}")
     public AjaxResult getIdNo(@PathVariable("patientId") String patientId){
         return AjaxResult.success("接口调用成功", medrecService.selectIdNo(patientId));
-    }
+    }*/
 }

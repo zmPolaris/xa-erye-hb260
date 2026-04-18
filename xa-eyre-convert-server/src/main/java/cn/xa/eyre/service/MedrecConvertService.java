@@ -93,25 +93,17 @@ public class MedrecConvertService {
             if (IdcardUtil.isValidCard(patMasterIndex.getIdNo())){
                 emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
                 emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-                emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
+                emrPatientInfo.setIdCard("-");
             }else {
                 emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                 emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
                 emrPatientInfo.setIdCard(patMasterIndex.getIdNo());
             }
         }else {
-            // 获取不到证件号码时从医保信息表查询
-            R<String> idNoResult = medrecFeignClient.getIdNo(patMasterIndex.getPatientId());
-            if (R.SUCCESS == idNoResult.getCode() && idNoResult.getData() != null){
-                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
-                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
-                emrPatientInfo.setIdCard(idNoResult.getData());
-            }else {
-                // 还获取不到，取PatientId
-                emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
-                emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-                emrPatientInfo.setIdCard(patMasterIndex.getPatientId());
-            }
+            // 还获取不到，取PatientId
+            emrPatientInfo.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
+            emrPatientInfo.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
+            emrPatientInfo.setIdCard(patMasterIndex.getPatientId());
         }
         if(StringUtils.isNotBlank(patMasterIndex.getSex())){
             if (patMasterIndex.getSex().equals("男")){

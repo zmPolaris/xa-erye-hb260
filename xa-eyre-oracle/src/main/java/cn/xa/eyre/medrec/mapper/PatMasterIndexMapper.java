@@ -16,5 +16,5 @@ public interface PatMasterIndexMapper {
 
     int updateByPrimaryKey(PatMasterIndex record);
 
-    String selectIdNo(@Param("patientId") String patientId);
+//    String selectIdNo(@Param("patientId") String patientId);
 }

@@ -297,7 +297,7 @@ public class OrdadmConvertService {
         if (cn.xa.eyre.common.utils.StringUtils.isBlank(patMasterIndex.getIdNo())){
             record.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
             record.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-            record.setIdCard(patMasterIndex.getIdNo());
+            record.setIdCard("-");
         }else {
             if (IdcardUtil.isValidCard(patMasterIndex.getIdNo())){
                 record.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());

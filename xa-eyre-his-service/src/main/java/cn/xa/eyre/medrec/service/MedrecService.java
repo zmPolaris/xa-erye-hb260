@@ -79,7 +79,7 @@ public class MedrecService {
         return diagnosticCategoryMapper.getDiagnosticDescCode(patientId);
     }
 
-    public String selectIdNo(String patientId) {
+    /*public String selectIdNo(String patientId) {
         return patMasterIndexMapper.selectIdNo(patientId);
-    }
+    }*/
 }

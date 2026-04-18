@@ -187,7 +187,7 @@ public class LabConvertService {
                 if (StringUtils.isBlank(medrecResult.getData().getIdNo())){
                     emrExLab.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE_OTHER.getCode());
                     emrExLab.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE_OTHER.getName());
-                    emrExLab.setIdCard(medrecResult.getData().getIdNo());
+                    emrExLab.setIdCard("-");
                 }else {
                     emrExLab.setIdCardTypeCode(HubCodeEnum.ID_CARD_TYPE.getCode());
                     emrExLab.setIdCardTypeName(HubCodeEnum.ID_CARD_TYPE.getName());
@@ -199,7 +199,12 @@ public class LabConvertService {
                 emrExLabItem.setId(id);
                 emrExLabItem.setExLabId(id);
 
-                emrExLabItem.setItemCode(labResult.getReportItemCode());
+                // 处理检验项目代码为空的情况
+                String itemCode = labResult.getReportItemCode();
+                if(StringUtils.isBlank(itemCode)){
+                    itemCode = "-";
+                }
+                emrExLabItem.setItemCode(itemCode);
                 emrExLabItem.setItemName(labResult.getReportItemName());
 
                 if(StringUtils.isNotBlank(labResult.getResult())){
@@ -251,7 +256,7 @@ public class LabConvertService {
                                     emrExLabItem.setExaminationQuantificationRi("0");
                                 }
                             }else {
-                                emrExLabItem.setExaminationQuantificationRi(String.valueOf(checkNumberInRange(labResult.getPrintContext(), labResult.getResult())));
+                                emrExLabItem.setExaminationQuantificationRi("0");
                             }
 
                             if (labResult.getPrintContext().contains("健康非妊娠绝经前女性")){
