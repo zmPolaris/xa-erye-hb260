@@ -155,7 +155,7 @@ public class OutpdoctConvertService {
                     codes.add(dictDiseaseIcd10);
                 }
                 for (OutpDiagnosisYb diag : outpDiagnosisYbList) {
-                    DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diag.getDiagCode(), diag.getDiagDesc());
+                    DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiagnosisGlIcd10(diag.getDiagCode(), diag.getDiagDesc());
                     codes.add(dictDiseaseIcd10);
                 }
 

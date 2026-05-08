@@ -22,9 +22,11 @@ import cn.xa.eyre.hub.service.SynchroEmrRealService;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.system.dict.domain.DdNation;
+import cn.xa.eyre.system.dict.domain.DictDiagnosisGlIcd10;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DdNationMapper;
+import cn.xa.eyre.system.dict.mapper.DictDiagnosisGlIcd10Mapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 
@@ -60,6 +62,8 @@ public class HubToolService {
     private OutpadmFeignClient outpadmFeignClient;
     @Autowired
     private DictDiseaseIcd10Mapper dictDiseaseIcd10Mapper;// ICD10转码表
+    @Autowired
+    private DictDiagnosisGlIcd10Mapper dictDiagnosisGlIcd10Mapper;
 
     @Autowired
     private RedisCache redisCache;
@@ -433,10 +437,27 @@ public class HubToolService {
         return dictDisDept;
     }
 
+    /**
+     * @description 获取住院疾病编码
+     **/
     public DictDiseaseIcd10 getDiseaseIcd10(String code, String name){
         DictDiseaseIcd10 dictDiseaseIcd10 = dictDiseaseIcd10Mapper.selectByEmrCode(code);
         if(dictDiseaseIcd10 == null || dictDiseaseIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
             dictDiseaseIcd10 = new DictDiseaseIcd10(code, name);
+        }
+        return dictDiseaseIcd10;
+    }
+
+    /**
+     * @description 获取门诊疾病编码
+     **/
+    public DictDiseaseIcd10 getDiagnosisGlIcd10(String code, String name){
+        DictDiagnosisGlIcd10 glIcd10 = dictDiagnosisGlIcd10Mapper.selectByEmrCode(code);
+        DictDiseaseIcd10 dictDiseaseIcd10 = new DictDiseaseIcd10();
+        if(glIcd10 == null || glIcd10.getHubCode().equals(HubCodeEnum.DISEASE_ICD10_CODE.getCode())){
+            dictDiseaseIcd10 = new DictDiseaseIcd10(code, name);
+        } else {
+            dictDiseaseIcd10 = new DictDiseaseIcd10(glIcd10.getHubCode(), glIcd10.getHubName());
         }
         return dictDiseaseIcd10;
     }
