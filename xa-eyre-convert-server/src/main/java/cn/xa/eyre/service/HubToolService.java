@@ -25,10 +25,7 @@ import cn.xa.eyre.system.dict.domain.DdNation;
 import cn.xa.eyre.system.dict.domain.DictDiagnosisGlIcd10;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
-import cn.xa.eyre.system.dict.mapper.DdNationMapper;
-import cn.xa.eyre.system.dict.mapper.DictDiagnosisGlIcd10Mapper;
-import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
-import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
+import cn.xa.eyre.system.dict.mapper.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +64,8 @@ public class HubToolService {
 
     @Autowired
     private RedisCache redisCache;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     public boolean synchroPatient(Integer num) {
         /*R<List<PatMasterIndex>> patsResult = medrecFeignClient.getPatMasterIndexList(num);
@@ -380,17 +379,27 @@ public class HubToolService {
         }
         emrPatientInfo.setGenderName(patMasterIndex.getSex());
         emrPatientInfo.setBirthDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, patMasterIndex.getDateOfBirth()));
-        if("CN".equals(patMasterIndex.getCitizenship())){
+//        if("CN".equals(patMasterIndex.getCitizenship())){
             emrPatientInfo.setNationalityCode(HubCodeEnum.NATIONALITY_CODE.getCode());
             emrPatientInfo.setNationalityName(HubCodeEnum.NATIONALITY_CODE.getName());
-        }
+//        }
         DdNation ddNation = ddNationMapper.selectByName(patMasterIndex.getNation());
         if (ddNation != null){
             emrPatientInfo.setNationCode(ddNation.getCode());
             emrPatientInfo.setNationName(ddNation.getName());
+        } else {
+            emrPatientInfo.setNationCode(HubCodeEnum.NATION_CODE.getCode());
+            emrPatientInfo.setNationName(HubCodeEnum.NATION_CODE.getName());
         }
         emrPatientInfo.setCurrentAddrName(patMasterIndex.getMailingAddress());
         emrPatientInfo.setCurrentAddrDetail(patMasterIndex.getNextOfKinAddr());
+        if (StringUtils.isNotBlank(patMasterIndex.getPhoneNumberHome())){
+            emrPatientInfo.setTel(patMasterIndex.getPhoneNumberHome());
+        } else if (StringUtils.isNotBlank(patMasterIndex.getNextOfKinPhone())){
+            emrPatientInfo.setTel(patMasterIndex.getNextOfKinPhone());
+        } else {
+            emrPatientInfo.setTel("-");
+        }
         Date birthDate = patMasterIndex.getDateOfBirth();
         if (null != birthDate) {
             LocalDate localDate = DateUtils.convertDateToLocalDate(birthDate);

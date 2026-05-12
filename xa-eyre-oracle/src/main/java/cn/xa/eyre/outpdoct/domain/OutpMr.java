@@ -35,6 +35,10 @@ public class OutpMr extends OutpMrKey {
 
     private Date printDateTime;
 
+    private Date beginVisitDate; // 补充参数
+
+    private Date endVisitDate;
+
     private String visitDateStr;
 
     private String visitDateShortStr;
@@ -181,5 +185,21 @@ public class OutpMr extends OutpMrKey {
 
     public void setVisitDateShortStr(String visitDateShortStr) {
         this.visitDateShortStr = visitDateShortStr;
+    }
+
+    public Date getBeginVisitDate() {
+        return beginVisitDate;
+    }
+
+    public void setBeginVisitDate(Date beginVisitDate) {
+        this.beginVisitDate = beginVisitDate;
+    }
+
+    public Date getEndVisitDate() {
+        return endVisitDate;
+    }
+
+    public void setEndVisitDate(Date endVisitDate) {
+        this.endVisitDate = endVisitDate;
     }
 }

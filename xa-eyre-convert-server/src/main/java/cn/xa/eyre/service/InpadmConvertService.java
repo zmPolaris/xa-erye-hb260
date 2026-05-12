@@ -24,9 +24,11 @@ import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.*;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
 import cn.xa.eyre.system.dict.domain.DatasetDiseaseData;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
 import cn.xa.eyre.system.dict.mapper.DatasetDiseaseDataMapper;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 import org.slf4j.Logger;
@@ -63,6 +65,8 @@ public class InpadmConvertService {
     private HubToolService hubToolService;
     @Autowired
     private InpadmFeignClient inpadmFeignClient;
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     public void patsInHospital(DBMessage dbMessage) {
         logger.debug("PATS_IN_HOSPITAL表变更接口");
@@ -112,6 +116,12 @@ public class InpadmConvertService {
             emrAdmissionInfo.setWardNo(patsInHospital.getWardCode());
             emrAdmissionInfo.setBedNo(String.valueOf(patsInHospital.getBedNo()));
             emrAdmissionInfo.setAdmissionDate(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, patsInHospital.getAdmissionDateTime()));
+            emrAdmissionInfo.setPhysicalExamination("-");
+            emrAdmissionInfo.setWardName("-");
+            String wardCode = patsInHospital.getWardCode();
+            if (StringUtils.isNotBlank(wardCode)) {
+                emrAdmissionInfo.setWardName(wardCode);
+            }
             // 治疗医生
             if (StringUtils.isNotBlank(patsInHospital.getDoctorInCharge())){
                 R<Users> user = commFeignClient.getUserByName(patsInHospital.getDoctorInCharge());
@@ -137,6 +147,24 @@ public class InpadmConvertService {
 
             emrAdmissionInfo.setDeptCode(dictDisDept.getHubCode());
             emrAdmissionInfo.setDeptName(dictDisDept.getHubName());
+
+            // 查询7天内门诊信息补充病情
+            OutpMr outpMr = new OutpMr();
+            outpMr.setPatientId(patsInHospital.getPatientId());
+            outpMr.setBeginVisitDate(DateUtils.addDays(patsInHospital.getAdmissionDateTime(), -7));
+            outpMr.setEndVisitDate(patsInHospital.getAdmissionDateTime());
+            R<List<OutpMr>> mrResult = outpdoctFeignClient.getOutpMrByCondition(outpMr);
+            if (R.SUCCESS == mrResult.getCode() &&mrResult.getData() != null) {
+                outpMr = mrResult.getData().get(0);
+                emrAdmissionInfo.setChiefComplaint(outpMr.getIllnessDesc());
+                emrAdmissionInfo.setPresentIllnessHis(outpMr.getMedHistory());
+                emrAdmissionInfo.setPhysicalExamination(outpMr.getBodyExam());
+            } else {
+                emrAdmissionInfo.setChiefComplaint("-");
+                emrAdmissionInfo.setPresentIllnessHis("-");
+                emrAdmissionInfo.setPhysicalExamination("-");
+            }
+            emrAdmissionInfo.setStudiesSummaryResult("-");
 
             DictDiseaseIcd10 dictDiseaseIcd10 = hubToolService.getDiseaseIcd10(diagnosticCatResult.getData().getDiagnosisCode(), diagnosisResult.getData().getDiagnosisDesc());
             emrAdmissionInfo.setWmConfirmedDiagnosisCode(dictDiseaseIcd10.getHubCode());
@@ -179,6 +207,15 @@ public class InpadmConvertService {
             emrActivityInfo.setDiagnoseTime(emrAdmissionInfo.getConfirmedDiagnosisDate());
             emrActivityInfo.setWmDiseaseCode(emrAdmissionInfo.getWmConfirmedDiagnosisCode());
             emrActivityInfo.setWmDiseaseName(emrAdmissionInfo.getWmConfirmedDiagnosisName());
+            // 2026-05-06新增传染病诊断条件必填
+            String[] codes = emrActivityInfo.getWmDiseaseCode().split("||");
+            for (String code: codes) {
+                DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                if(icd10 != null){
+                    emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                    emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                }
+            }
             emrActivityInfo.setFillDoctor(patsInHospital.getDoctorInCharge());
             emrActivityInfo.setOperatorId(emrAdmissionInfo.getOperatorId());
             if (StringUtils.isBlank(emrAdmissionInfo.getOperatorId())){

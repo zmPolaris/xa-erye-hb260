@@ -25,8 +25,10 @@ import cn.xa.eyre.medrec.domain.PatMasterIndex;
 import cn.xa.eyre.outpadm.domain.ClinicMaster;
 import cn.xa.eyre.outpdoct.domain.OutpDiagnosisYb;
 import cn.xa.eyre.outpdoct.domain.OutpMr;
+import cn.xa.eyre.system.dict.domain.DdDiseaseIcd;
 import cn.xa.eyre.system.dict.domain.DictDisDept;
 import cn.xa.eyre.system.dict.domain.DictDiseaseIcd10;
+import cn.xa.eyre.system.dict.mapper.DdDiseaseIcdMapper;
 import cn.xa.eyre.system.dict.mapper.DictDisDeptMapper;
 import cn.xa.eyre.system.dict.mapper.DictDiseaseIcd10Mapper;
 
@@ -66,6 +68,9 @@ public class OutpdoctConvertService {
     private RedisCache redisCache;
 
     public static final String OUTPDOCT_OUTP_MR_KEY = "outpdoct:outp_mr:";
+
+    @Autowired
+    private DdDiseaseIcdMapper ddDiseaseIcdMapper;
 
     CaffeineCacheUtils<String, HashSet<String>> localCache = CaffeineCacheUtils.createExpireAfterAccess(25, TimeUnit.HOURS);
 
@@ -201,7 +206,7 @@ public class OutpdoctConvertService {
                 emrActivityInfo.setPatientId(outpMr.getPatientId());
                 String clinicType = clinicMaster.getClinicType();
                 if (StringUtils.isNotBlank(clinicType)){
-                    if (clinicType.contains("急诊号")){
+                    if (clinicType.contains("急诊")){
                         emrActivityInfo.setActivityTypeCode(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getCode());
                         emrActivityInfo.setActivityTypeName(HubCodeEnum.DIAGNOSIS_ACTIVITIES_EMERGENCY.getName());
                     } else {
@@ -233,6 +238,15 @@ public class OutpdoctConvertService {
                 if (StringUtils.isNotBlank(emrOutpatientRecord.getWmDiagnosisCode())){
                     emrActivityInfo.setWmDiseaseCode(emrOutpatientRecord.getWmDiagnosisCode());
                     emrActivityInfo.setWmDiseaseName(emrOutpatientRecord.getWmDiagnosisName());
+                    // 2026-05-06新增传染病诊断条件必填
+                    String[] disCodes = emrActivityInfo.getWmDiseaseCode().split("||");
+                    for (String code: disCodes) {
+                        DdDiseaseIcd icd10 = ddDiseaseIcdMapper.selectByCode(emrActivityInfo.getWmDiseaseCode());
+                        if(icd10 != null){
+                            emrActivityInfo.setDiseaseCode(StringUtils.isBlank(emrActivityInfo.getDiseaseCode()) ? code : "||" + code);
+                            emrActivityInfo.setDiseaseName(StringUtils.isBlank(emrActivityInfo.getDiseaseName()) ? icd10.getName() : "||" + icd10.getName());
+                        }
+                    }
                 }else {
                     emrActivityInfo.setWmDiseaseCode(HubCodeEnum.DISEASE_ICD10_CODE.getCode());
                     emrActivityInfo.setWmDiseaseName(HubCodeEnum.DISEASE_ICD10_CODE.getName());

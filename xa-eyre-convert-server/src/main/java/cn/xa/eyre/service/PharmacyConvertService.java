@@ -15,6 +15,7 @@ import cn.xa.eyre.hub.domain.emrmonitor.EmrOrderItem;
 import cn.xa.eyre.hub.domain.emrreal.EmrActivityInfo;
 import cn.xa.eyre.hub.service.SynchroEmrMonitorService;
 import cn.xa.eyre.hub.service.SynchroEmrRealService;
+import cn.xa.eyre.hub.staticvalue.DrugUnitEnum;
 import cn.xa.eyre.hub.staticvalue.HubCodeEnum;
 import cn.xa.eyre.inpadm.domain.PatsInHospital;
 import cn.xa.eyre.medrec.domain.PatMasterIndex;
@@ -38,6 +39,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class PharmacyConvertService {
@@ -71,6 +73,8 @@ public class PharmacyConvertService {
         String prescDateStr = DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, date);
         System.out.println("prescDateStr:{}" + prescDateStr);
     }
+
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("[0-9.]+");
 
     public void drugPrescMaster(DBMessage dbMessage) {
         logger.debug("药品处方主记录DRUG_PRESC_MASTER变更接口");
@@ -197,7 +201,14 @@ public class PharmacyConvertService {
                     id = DigestUtil.md5Hex(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD_HH_MM_SS, prescDetail.getPrescDate()) + prescDetail.getPrescNo() + prescDetail.getItemNo());
                     emrOrderItem.setId(id);
                     emrOrderItem.setOrderId(emrOrder.getId());
-                    emrOrderItem.setDrugSpecifications(prescDetail.getDrugSpec());
+                    String packageSpec = prescDetail.getPackageSpec();
+                    DrugUnitEnum drugEnum = DrugUnitEnum.fromNameIgnoreCase(removeNumbersAndTrim(packageSpec));
+
+                    emrOrderItem.setDrugSpecifications(packageSpec);
+                    emrOrderItem.setDrugDosageCode(prescDetail.getDrugSpec());
+                    emrOrderItem.setDrugDosageUnitCode(drugEnum.getCode());
+                    emrOrderItem.setDrugDosageUnitName(drugEnum.getValue());
+
                     emrOrderItem.setOperatorId(emrOrder.getOperatorId());
                     emrOrderItem.setOperationTime(DateUtils.parseDateToStr(DateUtils.YYYY_MM_DD, DateUtils.getNowDate()));
                     DictDrugType drugType = dictDrugTypeMapper.selectByEmrCode(drugCode);
@@ -227,5 +238,26 @@ public class PharmacyConvertService {
         int second = calendar.get(Calendar.SECOND);
 
         return (hour == 0 && minute == 0 && second == 0);
+    }
+
+    /**
+     * 去除数字部分，同时去除多余空格
+     */
+    public static String removeNumbersAndTrim(String str) {
+        if (str == null || str.trim().isEmpty()) {
+            return "";
+        }
+
+        // 替换数字和小数点，然后去除首尾空格
+        String result = NUMBER_PATTERN.matcher(str).replaceAll("");
+        if (result.contains(":")) {
+            String[] split = result.split(":");
+            if (split.length > 1) {
+                return split[1].trim();
+            } else {
+                return split[0].trim();
+            }
+        }
+        return result.trim();
     }
 }
